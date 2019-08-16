@@ -5,6 +5,12 @@
 #include <string.h>
 #include <malloc.h>
 #include <sys/wait.h>
+#include <errno.h>
+
+void _err_msg(int errno)
+{
+		
+}
 
 int main(int argc, __attribute__((unused)) char *argv[])
 {
@@ -44,7 +50,9 @@ int main(int argc, __attribute__((unused)) char *argv[])
 			child = fork();
 			if (!child)
 			{
-				execve(av[0], av, NULL);
+				exe_return = execve(av[0], av, NULL);
+				if (exe_return)
+					_err_msg(errno);
 				exit(0);
 			}
 			else
