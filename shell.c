@@ -5,6 +5,7 @@
 #include <string.h>
 #include <malloc.h>
 #include <sys/wait.h>
+
 int main(int argc, __attribute__((unused)) char *argv[])
 {
 	char *command = malloc(100), *av[5], tok[100], *av2;
@@ -26,7 +27,10 @@ int main(int argc, __attribute__((unused)) char *argv[])
 			av2=strtok(command, " ");
 			_strcpy(av[i++],av2);
 			if (!_strcmp("exit",av[0]))
+			{
+				status = 1;
 				break;
+			}
 			while((av2=strtok(NULL," ")))
 				_strcpy(av[i++],av2);
 			while(i<5)
@@ -47,11 +51,16 @@ int main(int argc, __attribute__((unused)) char *argv[])
 				wait(&status);
 		}
 	}
-	free(command);
 	for (i=0;i<5;i++)
 	{
 		if (av[i])
 			free(av[i]);
 	}
+	if (status == 1)
+	{
+		av2 = strtok(NULL, " ");
+		my_exit(av2, &command);
+	}
+	free(command);
 	return (0);
 }
