@@ -39,8 +39,6 @@ int main(int argc, char *argv[])
 			getl_res = getline(&command, &size, stdin);
 			if (getl_res == EOF)
 				break;
-			else if (getl_res == -1)
-				return (-1);
 			if (*command == '\n')
 				continue;
 			command[_strlen(command) - 1] = '\0';
