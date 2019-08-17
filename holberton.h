@@ -7,5 +7,7 @@ int _strlen(char *);
 int _strcmp(char *, char *);
 char *_strcat(char *dest, char *src);
 void my_exit(char* exit_status, char ** command);
+int _atoi(char *);
+
 
 #endif /* HOLBERTON_H */

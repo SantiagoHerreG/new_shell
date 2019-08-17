@@ -1,10 +1,12 @@
-#include <unistd.h>
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "holberton.h"
 #include <string.h>
+#include <unistd.h>
+
 /**
 * main - Entry point for shell.
 * @argc: Argument counter.
@@ -13,18 +15,27 @@
 */
 int main(int argc, char *argv[])
 {
-	char *command = malloc(100), *av[10], *token;
+	char *command, *av[10], *token;
 	size_t size = 100;
 	pid_t child;
 	ssize_t getl_res;
-	short i;
+	short i, write_err = 0, exit_signal = 0;
 
+	command = malloc(100);
+	if (!command)
+		return (-1);
 	if (argc == 1)
 	{
 		while (1)
 		{
 			i = 0;
-			write(STDOUT_FILENO, "Command> ", 9);
+			write_err = write(STDOUT_FILENO, "Command> ", 9);
+			if (write_err == -1)
+			{
+				perror(argv[0]);
+				free(command);
+				return (-1);
+			}
 			getl_res = getline(&command, &size, stdin);
 			if (getl_res == EOF)
 				break;
@@ -33,10 +44,24 @@ int main(int argc, char *argv[])
 			command[_strlen(command) - 1] = '\0';
 			token = strtok(command, " ");
 			av[i] = malloc(_strlen(token) + 1);
+			if (!av[i])
+			{
+				free(command);
+				return (-1);
+			}
 			_strcpy(av[i++], token);
+			if (!_strcmp("exit", av[0]) && (exit_signal = 1))
+				break;
 			while ((token = strtok(NULL, " ")))
 			{
 				av[i] = malloc(_strlen(token) + 1);
+				if (!av[i])
+				{
+					free(command);
+					for (--i; i >= 0; i--)
+						free(av[i]);
+					return (-1);
+				}
 				_strcpy(av[i++], token);
 			}
 			av[i] = NULL;
@@ -55,6 +80,8 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
+	if (exit_signal)
+		my_exit(strtok(NULL, " "), &command);
 	free(command);
 	return (0);
 }
