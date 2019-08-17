@@ -13,7 +13,7 @@ void my_exit(char* exit_status, char ** command)
 
         if(exit_status)
         {
-                i = atoi(exit_status);
+                i = _atoi(exit_status);
                 free(*command);
                 exit(i);
         }
