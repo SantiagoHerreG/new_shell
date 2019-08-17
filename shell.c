@@ -1,73 +1,46 @@
-#include "holberton.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <malloc.h>
+#include <sys/types.h>
 #include <sys/wait.h>
-#include <errno.h>
-
-void _err_msg(int errno)
+#include "holberton.h"
+/**
+* main - Entry point for shell.
+* @argc: Argument counter.
+* @argv: Arguent vector.
+* Return: 0 on success.
+*/
+int main(int argc, char *argv[])
 {
-		
-}
-
-int main(int argc, __attribute__((unused)) char *argv[])
-{
-	char *command = malloc(100), *av[5], tok[100], *av2;
+	char *command = malloc(100), *av[2];
 	size_t size = 100;
 	pid_t child;
-	int status, i = 0;
+	ssize_t getl_res;
 
 	if (argc == 1)
 	{
-		for (i = 0; i < 5; i++)
-			av[i]=malloc(20);
 		while (1)
 		{
-			i = 0;
-			_strcpy(tok,"/bin/");
-			write(1, "My_Prompt> ", 11);
-			getline(&command, &size, stdin);
-			command[_strlen(command)-1]='\0';
-			av2=strtok(command, " ");
-			_strcpy(av[i++],av2);
-			if (!_strcmp("exit",av[0]))
-			{
-				status = 1;
+			write(STDOUT_FILENO, "Command> ", 9);
+			getl_res = getline(&command, &size, stdin);
+			if (getl_res == EOF)
 				break;
-			}
-			while((av2=strtok(NULL," ")))
-				_strcpy(av[i++],av2);
-			while(i<5)
-			{
-				free(av[i]);
-				av[i++]=NULL;
-			}
-			av[i]=NULL;
-			_strcat(tok, av[0]);
-			_strcpy(av[0], tok);
+			if (*command == '\n')
+				continue;
+			command[_strlen(command) - 1] = '\0';
+			av[0] = command;
+			av[1] = NULL;
 			child = fork();
 			if (!child)
 			{
-				exe_return = execve(av[0], av, NULL);
-				if (exe_return)
-					_err_msg(errno);
-				exit(0);
+				execve(command, av, NULL);
+				perror(argv[0]);
+				free(command);
+				exit(1);
 			}
 			else
-				wait(&status);
+				wait(NULL);
 		}
-	}
-	for (i=0;i<5;i++)
-	{
-		if (av[i])
-			free(av[i]);
-	}
-	if (status == 1)
-	{
-		av2 = strtok(NULL, " ");
-		my_exit(av2, &command);
 	}
 	free(command);
 	return (0);
