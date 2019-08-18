@@ -3,6 +3,8 @@
 
 #define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
+#include <signal.h>
+
 char *_strcpy(char *, char *);
 int _strlen(char *);
 int _strcmp(char *, char *);
