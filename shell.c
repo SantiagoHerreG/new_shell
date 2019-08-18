@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
 
 	signal(SIGINT, SIG_IGN);
 	command = malloc(ARG_MAX);
+
 	if (!command)
 		return (-1);
 	if (argc == 1)
