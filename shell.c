@@ -6,16 +6,18 @@
 #include "holberton.h"
 #include <string.h>
 #include <unistd.h>
+#include <linux/limits.h>
+#include <limits.h>
 /**
 * get_input - Prints prompt and gets input from user.
 * @prog_name: Name of the program executed.
 * @command: String where input will be saved.
 * Return: Result of the getline funcion.
 */
-short get_input(char *prog_name, char *command)
+short get_input(char *prog_name, char **command)
 {
 	short getl_res, write_err;
-	size_t size = 100;
+	int size = ARG_MAX;
 
 	write_err = write(STDOUT_FILENO, "Command> ", 9);
 	if (write_err == -1)
@@ -24,7 +26,7 @@ short get_input(char *prog_name, char *command)
 		free(command);
 		exit(-1);
 	}
-	getl_res = getline(&command, &size, stdin);
+	getl_res = _getline(command, &size, STDIN_FILENO);
 	return (getl_res);
 }
 /**
@@ -108,14 +110,15 @@ int main(int argc, char *argv[])
 	short exit_signal = 0, getl_res;
 
 	signal(SIGINT, SIG_IGN);
-	command = malloc(100);
+	command = malloc(ARG_MAX);
+
 	if (!command)
 		return (-1);
 	if (argc == 1)
 	{
 		while (1)
 		{
-			getl_res = get_input(argv[0], command);
+			getl_res = get_input(argv[0], &command);
 			if (getl_res == EOF)
 				break;
 			if (*command == '\n')
