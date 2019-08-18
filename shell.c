@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
 	ssize_t getl_res;
 	short i, write_err = 0, exit_signal = 0;
 
+	signal(SIGINT, SIG_IGN);
 	command = malloc(100);
 	if (!command)
 		return (-1);
