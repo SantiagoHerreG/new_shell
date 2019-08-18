@@ -55,6 +55,11 @@ short tokenize(char *command, char *av[], short *exit_signal)
 		free(av[0]);
 		return (1);
 	}
+	if (!_strcmp("cd", av[0]))
+	{
+		_change_dir(strtok(NULL, " "), command);
+		return (2);
+	}
 	while ((token = strtok(NULL, " ")))
 	{
 		av[i] = malloc(_strlen(token) + 1);
@@ -123,8 +128,10 @@ int main(int argc, char *argv[])
 			if (*command == '\n')
 				continue;
 			command[_strlen(command) - 1] = '\0';
-			if (tokenize(command, av, &exit_signal))
+			if (tokenize(command, av, &exit_signal) == 1)
 				break;
+			else if (tokenize(command, av, &exit_signal) == 2)
+				continue;
 			exec_command(command, av, argv[0]);
 		}
 	}
