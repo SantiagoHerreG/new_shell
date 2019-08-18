@@ -6,16 +6,16 @@
  * _getline - function that reads input from stdin
  * @command: address of pointer to buffer
  * @size: count of chars to be read as a line
- * @fd: file descriptor for rread function
+ * @fd: file descriptor for read function
  * Return: count of chars read including newline/ excluding terminating null
  */
 
-short _getline(char **command, size_t *size, int fd)
+short _getline(char **command, int *size, int fd)
 {
-	short read_bytes = 0, new_read = 0;
-	size_t i = 0;
+	short read_bytes = 0;
+	static int i;
 
-	read_bytes = read(fd, *command, 1);
+	read_bytes = read(fd, *command, *size);
 
 	if (read_bytes == 0)
 		return (-1);
@@ -25,23 +25,10 @@ short _getline(char **command, size_t *size, int fd)
 		perror("Could not read input");
 		exit(-1);
 	}
-	i++;
 
-	while (*command[0] != '\n' && i < *size)
-	{
-		new_read = read(fd, ++(*command), 1);
-		if (new_read == 0)
-			return (-1);
-		else if (new_read == -1)
-		{
-			free(*command);
-			perror("Could not read input");
-			exit(-1);
-		}
-		read_bytes += new_read;
+	while ((*command)[i] != '\n' && i < *size)
 		i++;
-	}
-	*(++(*command)) = '\0';
+	(*command)[i + 1] = '\0';
 
 	return (read_bytes);
 }

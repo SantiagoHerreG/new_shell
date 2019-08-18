@@ -6,6 +6,8 @@
 #include "holberton.h"
 #include <string.h>
 #include <unistd.h>
+#include <linux/limits.h>
+#include <limits.h>
 /**
 * get_input - Prints prompt and gets input from user.
 * @prog_name: Name of the program executed.
@@ -15,7 +17,7 @@
 short get_input(char *prog_name, char *command)
 {
 	short getl_res, write_err;
-	size_t size = 100;
+	int size = ARG_MAX;
 
 	write_err = write(STDOUT_FILENO, "Command> ", 9);
 	if (write_err == -1)
@@ -108,7 +110,7 @@ int main(int argc, char *argv[])
 	short exit_signal = 0, getl_res;
 
 	signal(SIGINT, SIG_IGN);
-	command = malloc(100);
+	command = malloc(ARG_MAX);
 	if (!command)
 		return (-1);
 	if (argc == 1)
