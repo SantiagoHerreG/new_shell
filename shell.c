@@ -112,7 +112,7 @@ void exec_command(char *command, char *av[], char *prog_name)
 int main(int argc, char *argv[])
 {
 	char *command, *av[10];
-	short exit_signal = 0, getl_res;
+	short exit_signal = 0, getl_res, tok_res;
 
 	signal(SIGINT, SIG_IGN);
 	command = malloc(ARG_MAX);
@@ -128,9 +128,10 @@ int main(int argc, char *argv[])
 			if (*command == '\n')
 				continue;
 			command[_strlen(command) - 1] = '\0';
-			if (tokenize(command, av, &exit_signal) == 1)
+			tok_res = tokenize(command, av, &exit_signal);
+			if (tok_res == 1)
 				break;
-			else if (tokenize(command, av, &exit_signal) == 2)
+			else if (tok_res == 2)
 				continue;
 			exec_command(command, av, argv[0]);
 		}
