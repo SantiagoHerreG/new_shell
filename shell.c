@@ -24,7 +24,7 @@ short get_input(char *prog_name, char *command)
 		free(command);
 		exit(-1);
 	}
-	getl_res = getline(&command, &size, stdin);
+	getl_res = _getline(&command, &size, STDIN_FILENO);
 	return (getl_res);
 }
 /**
@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
 	char *command, *av[10];
 	short exit_signal = 0, getl_res;
 
+	signal(SIGINT, SIG_IGN);
 	command = malloc(100);
 	if (!command)
 		return (-1);
