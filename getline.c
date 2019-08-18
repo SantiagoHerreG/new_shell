@@ -13,7 +13,6 @@
 short _getline(char **command, int *size, int fd)
 {
 	short read_bytes = 0;
-	static int i;
 
 	read_bytes = read(fd, *command, *size);
 
@@ -26,9 +25,6 @@ short _getline(char **command, int *size, int fd)
 		exit(-1);
 	}
 
-	while ((*command)[i] != '\n' && i < *size)
-		i++;
-	(*command)[i + 1] = '\0';
-
+	(*command)[read_bytes] = '\0';
 	return (read_bytes);
 }

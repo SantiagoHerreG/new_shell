@@ -14,7 +14,7 @@
 * @command: String where input will be saved.
 * Return: Result of the getline funcion.
 */
-short get_input(char *prog_name, char *command)
+short get_input(char *prog_name, char **command)
 {
 	short getl_res, write_err;
 	int size = ARG_MAX;
@@ -26,7 +26,7 @@ short get_input(char *prog_name, char *command)
 		free(command);
 		exit(-1);
 	}
-	getl_res = _getline(&command, &size, STDIN_FILENO);
+	getl_res = _getline(command, &size, STDIN_FILENO);
 	return (getl_res);
 }
 /**
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 	{
 		while (1)
 		{
-			getl_res = get_input(argv[0], command);
+			getl_res = get_input(argv[0], &command);
 			if (getl_res == EOF)
 				break;
 			if (*command == '\n')
