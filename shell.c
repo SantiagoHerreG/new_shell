@@ -58,6 +58,7 @@ short tokenize(char *command, char *av[], short *exit_signal)
 	if (!_strcmp("cd", av[0]))
 	{
 		_change_dir(strtok(NULL, " "), command);
+		free(av[0]);
 		return (2);
 	}
 	while ((token = strtok(NULL, " ")))
