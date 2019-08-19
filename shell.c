@@ -81,20 +81,40 @@ short tokenize(char *command, char *av[], short *exit_signal)
 * @command: Command given by the user.
 * @av: Tokenized command.
 * @prog_name: Name of the program.
+* @envp: Environment for the program.
 */
-void exec_command(char *command, char *av[], char *prog_name)
+void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 {
 	pid_t child;
-	short i;
+	short i = 0;
+	char *token[100], *full_comm = NULL, *path_str = NULL;
 
+	while (_strncmp(envp[i], "PATH", 4))
+		i++;
+	path_str = malloc(_strlen(envp[i]) + 1);
+	_strcpy(path_str, envp[i]);
+	token[0] = strtok(path_str, "=");
+	i = 0;
+	while ((token[i++] = strtok(NULL, ":")))
+		;
+	i = 0;
 	child = fork();
 	if (!child)
 	{
-		execve(av[0], av, NULL);
+		do {
+			full_comm = malloc(_strlen(token[i]) + _strlen(av[0]) + 2);
+			_strcpy(full_comm, token[i]);
+			_strcat(full_comm, "/");
+			execve(_strcat(full_comm, av[0]), av, envp);
+			free(full_comm);
+			i++;
+		} while (token[i]);
+		execve(av[0], av, envp);
 		perror(prog_name);
 		for (i = 0; av[i]; i++)
 			free(av[i]);
 		free(command);
+		free(path_str);
 		_exit(1);
 	}
 	else
@@ -102,15 +122,18 @@ void exec_command(char *command, char *av[], char *prog_name)
 		wait(NULL);
 		for (i = 0; av[i]; i++)
 			free(av[i]);
+		free(full_comm);
+		free(path_str);
 	}
 }
 /**
 * main - Entry point for shell.
 * @argc: Argument counter.
 * @argv: Arguent vector.
+* @envp: Environment for the program.
 * Return: 0 on success.
 */
-int main(int argc, char *argv[])
+int main(int argc, char *argv[], char *envp[])
 {
 	char *command, *av[10];
 	short exit_signal = 0, getl_res, tok_res;
@@ -135,7 +158,7 @@ int main(int argc, char *argv[])
 				break;
 			else if (tok_res == 2)
 				continue;
-			exec_command(command, av, argv[0]);
+			exec_command(command, av, argv[0], envp);
 		}
 	}
 	if (exit_signal)
