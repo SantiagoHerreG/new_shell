@@ -15,5 +15,4 @@ short _getline(char **command, int *size, int fd);
 void (*signal(int, void (*)(int)))(int);
 void _change_dir(char *path, char *command);
 
-
 #endif /* HOLBERTON_H */

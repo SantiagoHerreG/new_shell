@@ -114,8 +114,8 @@ int main(int argc, char *argv[])
 {
 	char *command, *av[10];
 	short exit_signal = 0, getl_res, tok_res;
+	void (*res)(int);
 
-	signal(SIGINT, SIG_IGN);
 	command = malloc(ARG_MAX);
 
 	if (!command)
@@ -125,6 +125,9 @@ int main(int argc, char *argv[])
 		while (1)
 		{
 			getl_res = get_input(argv[0], &command);
+			res = signal(SIGINT, SIG_IGN);
+			if (res == SIG_IGN)
+				*command = '\n';
 			if (getl_res == EOF)
 				break;
 			if (*command == '\n')
