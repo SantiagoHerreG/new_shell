@@ -14,6 +14,6 @@ int _atoi(char *);
 short _getline(char **command, int *size, int fd);
 void (*signal(int, void (*)(int)))(int);
 void _change_dir(char *path, char *command);
-
+short _strncmp(char *, char *, int);
 
 #endif /* HOLBERTON_H */
