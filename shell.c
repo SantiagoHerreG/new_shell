@@ -86,9 +86,21 @@ short tokenize(char *command, char *av[], short *exit_signal)
 void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 {
 	pid_t child;
-	short i = 0;
+	short i = 0, idx = -1;
 	char *token[100], *full_comm = NULL, *path_str = NULL;
 
+	while (av[i])
+	{
+		if (*av[i] == '\n')
+		{
+			free(av[i]);
+			av[i] = NULL;
+			idx = ++i;
+			break;
+		}
+		i++;
+	}
+	i = 0;
 	while (_strncmp(envp[i], "PATH", 4))
 		i++;
 	path_str = malloc(_strlen(envp[i]) + 1);
@@ -113,7 +125,6 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 		perror(prog_name);
 		for (i = 0; av[i]; i++)
 			free(av[i]);
-		free(command);
 		free(path_str);
 		_exit(1);
 	}
@@ -124,6 +135,8 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 			free(av[i]);
 		free(full_comm);
 		free(path_str);
+		if (idx >= 0)
+			exec_command(command, av+idx, prog_name, envp);
 	}
 }
 /**
@@ -135,8 +148,8 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 */
 int main(int argc, char *argv[], char *envp[])
 {
-	char *command, *av[10];
-	short exit_signal = 0, getl_res, tok_res;
+	char *command, *av[10], new_command[ARG_MAX];
+	short exit_signal = 0, getl_res, tok_res, i = 0, j = 0;
 
 	signal(SIGINT, SIG_IGN);
 	command = malloc(ARG_MAX);
@@ -147,18 +160,35 @@ int main(int argc, char *argv[], char *envp[])
 	{
 		while (1)
 		{
+			i = 0;
+			j = 0;
 			getl_res = get_input(argv[0], &command);
 			if (getl_res == EOF)
 				break;
-			if (*command == '\n')
+			if (!_strcmp(command, "\n"))
 				continue;
-			command[_strlen(command) - 1] = '\0';
-			tok_res = tokenize(command, av, &exit_signal);
+			while (command[i])
+			{
+				if (command[i] == '\n' && command[i + 1])
+				{
+					new_command[j++] = ' ';
+					new_command[j++] = '\n';
+					new_command[j++] = ' ';
+					i++;
+					continue;
+				}
+				new_command[j] = command[i];
+				i++;
+				j++;
+			}
+			new_command[j] = '\0';
+			new_command[_strlen(new_command) - 1] = '\0';
+			tok_res = tokenize(new_command, av, &exit_signal);
 			if (tok_res == 1)
 				break;
 			else if (tok_res == 2)
 				continue;
-			exec_command(command, av, argv[0], envp);
+			exec_command(new_command, av, argv[0], envp);
 		}
 	}
 	if (exit_signal)
