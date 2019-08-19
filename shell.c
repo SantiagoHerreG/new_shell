@@ -104,6 +104,8 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 	while (_strncmp(envp[i], "PATH", 4))
 		i++;
 	path_str = malloc(_strlen(envp[i]) + 1);
+	if (!path_str)
+		exit(-1);
 	_strcpy(path_str, envp[i]);
 	token[0] = strtok(path_str, "=");
 	i = 0;
@@ -115,6 +117,8 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 	{
 		do {
 			full_comm = malloc(_strlen(token[i]) + _strlen(av[0]) + 2);
+			if (!full_comm)
+				exit(-1);
 			_strcpy(full_comm, token[i]);
 			_strcat(full_comm, "/");
 			execve(_strcat(full_comm, av[0]), av, envp);
@@ -148,7 +152,7 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 */
 int main(int argc, char *argv[], char *envp[])
 {
-	char *command, *av[10], new_command[ARG_MAX];
+	char *command, *av[ARG_MAX], new_command[ARG_MAX];
 	short exit_signal = 0, getl_res, tok_res, i = 0, j = 0;
 
 	signal(SIGINT, SIG_IGN);
