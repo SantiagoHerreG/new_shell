@@ -16,7 +16,7 @@ void (*signal(int, void (*)(int)))(int);
 void _change_dir(char *path);
 short _strncmp(char *, char *, int);
 void check_newlines(char *av[], short *idx);
-void getenvtok(char *envp[], char *var, char *token[]);
+char *getenvtok(char *envp[], char *var, char *token[]);
 void set_unset_var(char *arg1, char *arg2);
 
 #endif /* HOLBERTON_H */

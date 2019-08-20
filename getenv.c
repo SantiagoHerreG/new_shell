@@ -5,8 +5,9 @@
 * @envp: Environment variables.
 * @var: Variable to find.
 * @token: Array to save the tokens.
+* Return: String that must be free'd.
 */
-void getenvtok(char *envp[], char *var, char *token[])
+char *getenvtok(char *envp[], char *var, char *token[])
 {
 	short i = 0;
 	char *path_str = NULL;
@@ -17,9 +18,9 @@ void getenvtok(char *envp[], char *var, char *token[])
 	if (!path_str)
 		exit(-1);
 	_strcpy(path_str, envp[i]);
-	token[0] = strtok(path_str, "=");
 	i = 0;
+	strtok(path_str, "=");
 	while ((token[i++] = strtok(NULL, ":")))
 		;
-	free(path_str);
+	return (path_str);
 }

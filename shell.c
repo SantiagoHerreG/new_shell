@@ -44,10 +44,7 @@ short tokenize(char *command, char *av[], short *exit_signal)
 	token = strtok(command, " ");
 	av[i] = malloc(_strlen(token) + 1);
 	if (!av[i])
-	{
-		free(command);
-		exit(-1);
-	}
+		free(command), exit(-1);
 	_strcpy(av[i++], token);
 	if (!_strcmp("exit", av[0]))
 	{
@@ -64,8 +61,7 @@ short tokenize(char *command, char *av[], short *exit_signal)
 	if (!_strcmp("setenv", av[0]))
 	{
 		token = strtok(NULL, " ");
-		set_unset_var(token, strtok(NULL, " "));
-		free(av[0]);
+		set_unset_var(token, strtok(NULL, " ")), free(av[0]);
 		return (2);
 	}
 	while ((token = strtok(NULL, " ")))
@@ -94,10 +90,10 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 {
 	pid_t child;
 	short i = 0, idx = -1;
-	char *token[100], *full_comm = NULL;
+	char *token[100], *full_comm = NULL, *path_str = NULL;
 
 	check_newlines(av, &idx);
-	getenvtok(envp, "PATH", token);
+	path_str = getenvtok(envp, "PATH", token);
 	child = fork();
 	if (!child)
 	{
@@ -115,6 +111,7 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 		perror(prog_name);
 		for (i = 0; av[i]; i++)
 			free(av[i]);
+		free(path_str);
 		_exit(1);
 	}
 	else
@@ -123,6 +120,7 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 		for (i = 0; av[i]; i++)
 			free(av[i]);
 		free(full_comm);
+		free(path_str);
 		if (idx >= 0)
 			exec_command(command, av + idx, prog_name, envp);
 	}
@@ -165,8 +163,7 @@ int main(int argc, char *argv[], char *envp[])
 			{
 				if (command[i] == '\n' && command[i + 1])
 				{
-					new_command[j++] = ' ';
-					new_command[j++] = '\n';
+					new_command[j++] = ' ', new_command[j++] = '\n';
 					new_command[j++] = ' ', i++;
 					continue;
 				}
@@ -184,5 +181,6 @@ int main(int argc, char *argv[], char *envp[])
 	}
 	if (exit_signal)
 		my_exit(strtok(NULL, " "));
+	free(command);
 	return (0);
 }
