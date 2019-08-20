@@ -2,8 +2,11 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-void _change_dir(char *path, char*command)
+/**
+* _change_dir - Function to handle the cd builtin.
+* @path: Path to go.
+*/
+void _change_dir(char *path)
 {
 	int chdir_res = 0;
 	char *old_dir, *new_dir, *home_ptr, *old_ptr;
@@ -12,7 +15,6 @@ void _change_dir(char *path, char*command)
 	new_dir = malloc(100);
 	if (!old_dir || !new_dir)
 	{
-		free(command);
 		free(old_dir);
 		free(new_dir);
 		exit(-1);

@@ -57,7 +57,14 @@ short tokenize(char *command, char *av[], short *exit_signal)
 	}
 	if (!_strcmp("cd", av[0]))
 	{
-		_change_dir(strtok(NULL, " "), command);
+		_change_dir(strtok(NULL, " "));
+		free(av[0]);
+		return (2);
+	}
+	if (!_strcmp("setenv", av[0]))
+	{
+		token = strtok(NULL, " ");
+		set_unset_var(token, strtok(NULL, " "));
 		free(av[0]);
 		return (2);
 	}
@@ -87,31 +94,10 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 {
 	pid_t child;
 	short i = 0, idx = -1;
-	char *token[100], *full_comm = NULL, *path_str = NULL;
+	char *token[100], *full_comm = NULL;
 
-	while (av[i])
-	{
-		if (*av[i] == '\n')
-		{
-			free(av[i]);
-			av[i] = NULL;
-			idx = ++i;
-			break;
-		}
-		i++;
-	}
-	i = 0;
-	while (_strncmp(envp[i], "PATH", 4))
-		i++;
-	path_str = malloc(_strlen(envp[i]) + 1);
-	if (!path_str)
-		exit(-1);
-	_strcpy(path_str, envp[i]);
-	token[0] = strtok(path_str, "=");
-	i = 0;
-	while ((token[i++] = strtok(NULL, ":")))
-		;
-	i = 0;
+	check_newlines(av, &idx);
+	getenvtok(envp, "PATH", token);
 	child = fork();
 	if (!child)
 	{
@@ -129,7 +115,6 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 		perror(prog_name);
 		for (i = 0; av[i]; i++)
 			free(av[i]);
-		free(path_str);
 		_exit(1);
 	}
 	else
@@ -138,10 +123,18 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 		for (i = 0; av[i]; i++)
 			free(av[i]);
 		free(full_comm);
-		free(path_str);
 		if (idx >= 0)
-			exec_command(command, av+idx, prog_name, envp);
+			exec_command(command, av + idx, prog_name, envp);
 	}
+}
+/**
+* sig_handler - Function to handle signals.
+* @signum: Number passed by te signal function.
+*/
+void sig_handler(int signum)
+{
+	if (signum == 2)
+		write(STDOUT_FILENO, "\nCommand> ", 10);
 }
 /**
 * main - Entry point for shell.
@@ -155,17 +148,14 @@ int main(int argc, char *argv[], char *envp[])
 	char *command, *av[ARG_MAX], new_command[ARG_MAX];
 	short exit_signal = 0, getl_res, tok_res, i = 0, j = 0;
 
-	signal(SIGINT, SIG_IGN);
-	command = malloc(ARG_MAX);
-
-	if (!command)
-		return (-1);
+	signal(SIGINT, sig_handler);
 	if (argc == 1)
 	{
 		while (1)
 		{
-			i = 0;
-			j = 0;
+			i = 0, j = 0, command = malloc(ARG_MAX);
+			if (!command)
+				return (-1);
 			getl_res = get_input(argv[0], &command);
 			if (getl_res == EOF)
 				break;
@@ -177,15 +167,12 @@ int main(int argc, char *argv[], char *envp[])
 				{
 					new_command[j++] = ' ';
 					new_command[j++] = '\n';
-					new_command[j++] = ' ';
-					i++;
+					new_command[j++] = ' ', i++;
 					continue;
 				}
-				new_command[j] = command[i];
-				i++;
-				j++;
+				new_command[j] = command[i], i++, j++;
 			}
-			new_command[j] = '\0';
+			free(command), new_command[j] = '\0';
 			new_command[_strlen(new_command) - 1] = '\0';
 			tok_res = tokenize(new_command, av, &exit_signal);
 			if (tok_res == 1)
@@ -196,7 +183,6 @@ int main(int argc, char *argv[], char *envp[])
 		}
 	}
 	if (exit_signal)
-		my_exit(strtok(NULL, " "), &command);
-	free(command);
+		my_exit(strtok(NULL, " "));
 	return (0);
 }

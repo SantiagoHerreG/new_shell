@@ -3,23 +3,20 @@
 /**
  * my_exit - function that exits the program with specified state
  * @exit_status: pointer to the argument of exit
- * @command: double pointer to memory allocated for command line
  * Return: void
  */
 
-void my_exit(char* exit_status, char ** command)
+void my_exit(char *exit_status)
 {
-        int i;
+	int i;
 
-        if(exit_status)
-        {
-                i = _atoi(exit_status);
-                free(*command);
-                exit(i);
-        }
-        else
-        {
-	        free(*command);
-        	exit(0);
-        }
+	if (exit_status)
+	{
+		i = _atoi(exit_status);
+		exit(i);
+	}
+	else
+	{
+		exit(0);
+	}
 }
