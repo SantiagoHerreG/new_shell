@@ -19,8 +19,8 @@ char *getenvtok(char *envp[], char *var, char *token[])
 		exit(-1);
 	_strcpy(path_str, envp[i]);
 	i = 0;
-	strtok(path_str, "=");
-	while ((token[i++] = strtok(NULL, ":")))
+	_strtok(path_str, "=");
+	while ((token[i++] = _strtok(NULL, ":")))
 		;
 	return (path_str);
 }

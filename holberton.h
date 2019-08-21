@@ -18,5 +18,6 @@ short _strncmp(char *, char *, int);
 void check_newlines(char *av[], short *idx);
 char *getenvtok(char *envp[], char *var, char *token[]);
 void set_unset_var(char *arg1, char *arg2);
+char *_strtok(char *base, char *delims);
 
 #endif /* HOLBERTON_H */
