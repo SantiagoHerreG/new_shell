@@ -61,8 +61,14 @@ short tokenize(char *command, char *av[], short *exit_signal)
 	if (!_strcmp("setenv", av[0]))
 	{
 		token = strtok(NULL, " ");
-		set_unset_var(token, strtok(NULL, " ")), free(av[0]);
+		set_var(token, strtok(NULL, " "));
+		free(av[0]);
 		return (2);
+	}
+	else if (!_strcmp("unsetenv", av[0]))
+	{
+		unset_var(strtok(NULL, " "));
+			return (2);
 	}
 	while ((token = strtok(NULL, " ")))
 	{
