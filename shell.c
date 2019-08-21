@@ -41,7 +41,7 @@ short tokenize(char *command, char *av[], short *exit_signal)
 	char *token;
 	short i = 0;
 
-	token = strtok(command, " ");
+	token = _strtok(command, " ");
 	av[i] = malloc(_strlen(token) + 1);
 	if (!av[i])
 		free(command), exit(-1);
@@ -54,17 +54,17 @@ short tokenize(char *command, char *av[], short *exit_signal)
 	}
 	if (!_strcmp("cd", av[0]))
 	{
-		_change_dir(strtok(NULL, " "));
+		_change_dir(_strtok(NULL, " "));
 		free(av[0]);
 		return (2);
 	}
 	if (!_strcmp("setenv", av[0]))
 	{
-		token = strtok(NULL, " ");
-		set_unset_var(token, strtok(NULL, " ")), free(av[0]);
+		token = _strtok(NULL, " ");
+		set_unset_var(token, _strtok(NULL, " ")), free(av[0]);
 		return (2);
 	}
-	while ((token = strtok(NULL, " ")))
+	while ((token = _strtok(NULL, " ")))
 	{
 		av[i] = malloc(_strlen(token) + 1);
 		if (!av[i])
@@ -180,7 +180,7 @@ int main(int argc, char *argv[], char *envp[])
 		}
 	}
 	if (exit_signal)
-		my_exit(strtok(NULL, " "));
+		my_exit(_strtok(NULL, " "));
 	free(command);
 	return (0);
 }
