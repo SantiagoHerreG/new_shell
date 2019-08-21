@@ -20,5 +20,6 @@ char *getenvtok(char *envp[], char *var, char *token[]);
 void set_var(char *arg1, char *arg2);
 void unset_var(char *var_to_rm);
 char *_strtok(char *base, char *delims);
+short check_builtins(char *av[], short *exit_signal);
 
 #endif /* HOLBERTON_H */
