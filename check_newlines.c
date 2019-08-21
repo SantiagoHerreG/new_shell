@@ -10,7 +10,7 @@ void check_newlines(char *av[], short *idx)
 
 	while (av[i])
 	{
-		if (*av[i] == '\n')
+		if (*av[i] == '\n' || *av[i] == ';')
 		{
 			free(av[i]);
 			av[i] = NULL;
