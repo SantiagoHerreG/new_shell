@@ -89,10 +89,11 @@ short tokenize(char *command, char *av[], short *exit_signal)
 void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 {
 	pid_t child;
-	short i = 0, idx = -1;
+	short i = 0, idx = -1, checks = -1;
 	char *token[100], *full_comm = NULL, *path_str = NULL;
+	int status;
 
-	check_newlines(av, &idx);
+	checks = check_newlines(av, &idx);
 	path_str = getenvtok(envp, "PATH", token);
 	child = fork();
 	if (!child)
@@ -116,12 +117,13 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 	}
 	else
 	{
-		wait(NULL);
+		wait(&status);
 		for (i = 0; av[i]; i++)
 			free(av[i]);
 		free(full_comm);
 		free(path_str);
-		if (idx >= 0)
+		if (idx >= 0 && (!checks || (checks == 1 && !status) ||
+			(checks == 2 && status)))
 			exec_command(command, av + idx, prog_name, envp);
 	}
 }
@@ -131,7 +133,7 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 */
 void sig_handler(int signum)
 {
-	if (signum == 2)
+	if (signum == SIGINT)
 		write(STDOUT_FILENO, "\nCommand> ", 10);
 }
 /**
