@@ -14,7 +14,7 @@ void set_var(char *arg1, char *arg2)
 
 	if (!arg1 || !arg2)
 	{
-		write(STDOUT_FILENO, "setenv: parameters not found\n", 29);
+		write(STDERR_FILENO, "setenv: parameters not found\n", 29);
 		return;
 	}
 
@@ -55,7 +55,7 @@ void unset_var(char *var_name)
 
 	if (!var_name)
 	{
-		write(STDOUT_FILENO, "unsetenv: parameter not found\n", 29);
+		write(STDERR_FILENO, "unsetenv: parameter not found\n", 29);
 		return;
 	}
 
@@ -66,7 +66,7 @@ void unset_var(char *var_name)
 		i++;
 	if (!environ[i])
 	{
-		write(STDOUT_FILENO, "unsetenv: Variable not found\n", 19);
+		write(STDERR_FILENO, "unsetenv: Variable not found\n", 19);
 		return;
 	}
 	while (environ[i])
