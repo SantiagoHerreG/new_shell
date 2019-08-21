@@ -39,37 +39,16 @@ short get_input(char *prog_name, char **command)
 short tokenize(char *command, char *av[], short *exit_signal)
 {
 	char *token;
-	short i = 0;
+	short i = 0, builtin = 0;
 
 	token = _strtok(command, " ");
 	av[i] = malloc(_strlen(token) + 1);
 	if (!av[i])
 		free(command), exit(-1);
 	_strcpy(av[i++], token);
-	if (!_strcmp("exit", av[0]))
-	{
-		*exit_signal = 1;
-		free(av[0]);
-		return (1);
-	}
-	if (!_strcmp("cd", av[0]))
-	{
-		_change_dir(_strtok(NULL, " "));
-		free(av[0]);
-		return (2);
-	}
-	if (!_strcmp("setenv", av[0]))
-	{
-		token = _strtok(NULL, " ");
-		set_var(token, strtok(NULL, " "));
-		free(av[0]);
-		return (2);
-	}
-	else if (!_strcmp("unsetenv", av[0]))
-	{
-		unset_var(strtok(NULL, " "));
-			return (2);
-	}
+	builtin = check_builtins(av, exit_signal);
+	if (builtin)
+		return (builtin);
 	while ((token = _strtok(NULL, " ")))
 	{
 		av[i] = malloc(_strlen(token) + 1);

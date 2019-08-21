@@ -9,7 +9,7 @@
 */
 void set_var(char *arg1, char *arg2)
 {
-	char *new_var, var_to_set[ARG_MAX];
+	char new_var[ARG_MAX], var_to_set[ARG_MAX];
 	short i = 0;
 
 	if (!arg1 || !arg2)
@@ -21,9 +21,6 @@ void set_var(char *arg1, char *arg2)
 	_strcpy(var_to_set, arg1);
 	_strcat(var_to_set, "=");
 
-	new_var = malloc(ARG_MAX);
-	if (!new_var)
-		exit(-1);
 
 	while (environ[i] && _strncmp(environ[i], var_to_set, _strlen(var_to_set)))
 		i++;
@@ -39,7 +36,6 @@ void set_var(char *arg1, char *arg2)
 		environ[i++] = new_var;
 		environ[i] = NULL;
 	}
-	free(new_var);
 }
 
 /**
