@@ -15,7 +15,7 @@ short _getline(char **command, int *size, int fd);
 void (*signal(int, void (*)(int)))(int);
 void _change_dir(char *path);
 short _strncmp(char *, char *, int);
-void check_newlines(char *av[], short *idx);
+short check_newlines(char *av[], short *idx);
 char *getenvtok(char *envp[], char *var, char *token[]);
 void set_var(char *arg1, char *arg2);
 void unset_var(char *var_to_rm);
