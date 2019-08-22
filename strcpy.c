@@ -8,8 +8,8 @@
  */
 char *_strcpy(char *dest, char *src)
 {
-
-	while ((*dest++ = *src++))
-		;
+	if (dest && src)
+		while ((*dest++ = *src++))
+			;
 	return (dest);
 }

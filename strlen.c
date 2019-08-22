@@ -6,9 +6,10 @@
  */
 int _strlen(char *s)
 {
-	int n;
+	int n = 0;
 
-	for (n = 0; *s; s++)
-		n++;
+	if (s)
+		for (n = 0; *s; s++)
+			n++;
 	return (n);
 }
