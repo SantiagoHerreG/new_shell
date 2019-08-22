@@ -105,11 +105,13 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 		wait(&status);
 		for (i = 0; av[i]; i++)
 			free(av[i]);
-		free(full_comm);
-		free(path_str);
+		free(full_comm), free(path_str);
 		if (idx >= 0 && (!checks || (checks == 1 && !status) ||
 			(checks == 2 && status)))
 			exec_command(command, av + idx, prog_name, envp);
+		else if (idx > 0 && checks == 3)
+			for (i = idx; av[i]; i++)
+				free(av[i]);
 	}
 }
 /**
