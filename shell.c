@@ -36,10 +36,11 @@ short get_input(char *prog_name, char **command)
 * @exit_signal: Flag for the exit builtin.
 * Return: 1 in case of exit signal, 0 otherwise.
 */
-short tokenize(char *command, char *av[], short *exit_signal)
+short tokenize(char *command, char *av[], short *exit_signal, char *alias[])
 {
 	char *token;
 	short i = 0, builtin = 0;
+	int alias_ret = 0;
 
 	token = _strtok(command, " ");
 	av[i] = malloc(_strlen(token) + 1);
@@ -62,6 +63,13 @@ short tokenize(char *command, char *av[], short *exit_signal)
 		_strcpy(av[i++], token);
 	}
 	av[i] = NULL;
+
+	if (!_strcmp("alias", av[0]))
+	{
+			alias_ret = print_alias(av, alias);
+			if (alias_ret)
+				return (alias_ret);
+	}
 	return (0);
 }
 /**
@@ -130,9 +138,10 @@ void sig_handler(int signum)
 */
 int main(int argc, char *argv[], char *envp[])
 {
-	char *command, *av[ARG_MAX], new_command[ARG_MAX];
+	char *command, *av[ARG_MAX], new_command[ARG_MAX], *alias[1000];
 	short exit_signal = 0, getl_res, tok_res, i = 0, j = 0;
 
+	alias[0] = NULL;
 	signal(SIGINT, sig_handler);
 	if (argc == 1)
 	{
@@ -158,7 +167,7 @@ int main(int argc, char *argv[], char *envp[])
 			}
 			free(command), new_command[j] = '\0';
 			new_command[_strlen(new_command) - 1] = '\0';
-			tok_res = tokenize(new_command, av, &exit_signal);
+			tok_res = tokenize(new_command, av, &exit_signal, alias);
 			if (tok_res == 1)
 				break;
 			else if (tok_res == 2)
@@ -167,7 +176,7 @@ int main(int argc, char *argv[], char *envp[])
 		}
 	}
 	if (exit_signal)
-		my_exit(_strtok(NULL, " "));
+		my_exit(_strtok(NULL, " "), alias);
 	free(command);
 	return (0);
 }
