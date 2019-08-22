@@ -2,26 +2,25 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <linux/limits.h>
 /**
 * _change_dir - Function to handle the cd builtin.
 * @path: Path to go.
 */
 void _change_dir(char *path)
 {
-	int chdir_res = 0;
-	char *old_dir, *new_dir, *home_ptr, *old_ptr;
+	int chdir_res = 0, i = 0, j = 0;
+	char ptr_dir[ARG_MAX], home_ptr[ARG_MAX], old_ptr[ARG_MAX];
 
-	old_dir = malloc(100);
-	new_dir = malloc(100);
-	if (!old_dir || !new_dir)
-	{
-		free(old_dir);
-		free(new_dir);
-		exit(-1);
-	}
-	home_ptr = getenv("HOME");
-	old_ptr = getenv("OLDPWD");
-	getcwd(old_dir, 100);
+	while (environ[i] && (_strncmp(environ[i], "HOME=", 5)))
+		i++;
+
+	while (environ[j] && (_strncmp(environ[j], "OLDPWD=", 7)))
+		j++;
+
+	_strcpy(old_ptr, environ[j] + 7);
+	_strcpy(home_ptr, environ[i] + 5);
+	getcwd(ptr_dir, ARG_MAX);
 	if (!path)
 		chdir_res = chdir(home_ptr);
 	else if (!_strcmp("-", path))
@@ -31,13 +30,9 @@ void _change_dir(char *path)
 	if (chdir_res)
 	{
 		perror("cd");
-		free(old_dir);
-		free(new_dir);
 		return;
 	}
-	setenv("OLDPWD", old_dir, 1);
-	getcwd(new_dir, 100);
-	setenv("PWD", new_dir, 1);
-	free(old_dir);
-	free(new_dir);
+	set_var("OLDPWD", ptr_dir);
+	getcwd(ptr_dir, ARG_MAX);
+	set_var("PWD", ptr_dir);
 }
