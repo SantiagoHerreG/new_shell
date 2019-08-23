@@ -68,7 +68,12 @@ short tokenize(char *command, char *av[], short *exit_signal, char *alias[])
 	{
 			alias_ret = print_alias(av, alias);
 			if (alias_ret)
+			{
+				i = 0;
+				while (av[i])
+					free(av[i++]);
 				return (alias_ret);
+			}
 	}
 	return (0);
 }
