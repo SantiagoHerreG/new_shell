@@ -39,31 +39,37 @@ short get_input(char *prog_name, char **command)
 */
 short tokenize(char *command, char *av[], short *exit_signal, char *alias[])
 {
-	char *token;
+	char *token, arguments[ARG_MAX];
 	short i = 0, builtin = 0;
-	int alias_ret = 0;
+	int alias_ret = 0, alias_exp = 0;
 
 	token = _strtok(command, " ");
 	av[i] = malloc(_strlen(token) + 1);
 	if (!av[i])
-		free(command), exit(-1);
+		exit(-1);
 	_strcpy(av[i++], token);
 	builtin = check_builtins(av, exit_signal);
 	if (builtin)
 		return (builtin);
-	while ((token = _strtok(NULL, " ")))
+	token = _strtok(NULL, " ");
+	_strcpy(arguments, token);
+	alias_exp = alias_expansion(av, alias, arguments);
+			if (!alias_exp)
 	{
-		av[i] = malloc(_strlen(token) + 1);
-		if (!av[i])
+		while ((token = _strtok(NULL, " ")))
 		{
-			free(command);
-			for (--i; i >= 0; i--)
-				free(av[i]);
-			exit(-1);
+			av[i] = malloc(_strlen(token) + 1);
+			if (!av[i])
+			{
+				free(command);
+				for (--i; i >= 0; i--)
+					free(av[i]);
+				exit(-1);
+			}
+			_strcpy(av[i++], token);
 		}
-		_strcpy(av[i++], token);
+		av[i] = NULL;
 	}
-	av[i] = NULL;
 
 	if (!_strcmp("alias", av[0]))
 	{
@@ -74,6 +80,7 @@ short tokenize(char *command, char *av[], short *exit_signal, char *alias[])
 		if (alias_ret)
 			return (alias_ret);
 	}
+	
 	return (0);
 }
 /**
