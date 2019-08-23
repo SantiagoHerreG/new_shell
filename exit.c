@@ -6,9 +6,12 @@
  * Return: void
  */
 
-void my_exit(char *exit_status)
+void my_exit(char *exit_status, char *alias[])
 {
 	int i;
+
+	while (alias[i])
+		free(alias[i++]);
 
 	if (exit_status)
 	{
