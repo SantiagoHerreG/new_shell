@@ -34,6 +34,7 @@ short get_input(char *prog_name, char **command)
 * @command: Command to convert.
 * @av: Vector of pointers to store the tokens.
 * @exit_signal: Flag for the exit builtin.
+* @alias: array of pointers to malloc'ed memory space for aliases.
 * Return: 1 in case of exit signal, 0 otherwise.
 */
 short tokenize(char *command, char *av[], short *exit_signal, char *alias[])
@@ -66,14 +67,12 @@ short tokenize(char *command, char *av[], short *exit_signal, char *alias[])
 
 	if (!_strcmp("alias", av[0]))
 	{
-			alias_ret = print_alias(av, alias);
-			if (alias_ret)
-			{
-				i = 0;
-				while (av[i])
-					free(av[i++]);
-				return (alias_ret);
-			}
+		alias_ret = print_alias(av, alias);
+		i = 0;
+		while (av[i])
+			free(av[i++]);
+		if (alias_ret)
+			return (alias_ret);
 	}
 	return (0);
 }
@@ -146,8 +145,7 @@ int main(int argc, char *argv[], char *envp[])
 	char *command, *av[ARG_MAX], new_command[ARG_MAX], *alias[1000];
 	short exit_signal = 0, getl_res, tok_res, i = 0, j = 0;
 
-	alias[0] = NULL;
-	signal(SIGINT, sig_handler);
+	alias[0] = NULL, signal(SIGINT, sig_handler);
 	if (argc == 1)
 	{
 		while (1)
