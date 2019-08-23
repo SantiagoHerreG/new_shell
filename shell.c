@@ -37,20 +37,16 @@ short get_input(char *prog_name, char **command)
 * @alias: array of pointers to malloc'ed memory space for aliases.
 * Return: 1 in case of exit signal, 0 otherwise.
 */
-short tokenize(char *command, char *av[], short *exit_signal, char *alias[])
+short tokenize(char *command, char *av[], char *alias[])
 {
 	char *token;
-	short i = 0, builtin = 0;
-	int alias_ret = 0;
+	short i = 0, builtin = 0, j = 0;
 
 	token = _strtok(command, " ");
 	av[i] = malloc(_strlen(token) + 1);
 	if (!av[i])
-		free(command), exit(-1);
+		exit(-1);
 	_strcpy(av[i++], token);
-	builtin = check_builtins(av, exit_signal);
-	if (builtin)
-		return (builtin);
 	while ((token = _strtok(NULL, " ")))
 	{
 		av[i] = malloc(_strlen(token) + 1);
@@ -64,16 +60,21 @@ short tokenize(char *command, char *av[], short *exit_signal, char *alias[])
 		_strcpy(av[i++], token);
 	}
 	av[i] = NULL;
-
-	if (!_strcmp("alias", av[0]))
+	i = 0;
+	while (av[i])
 	{
-		alias_ret = print_alias(av, alias);
-		i = 0;
-		while (av[i])
-			free(av[i++]);
-		if (alias_ret)
-			return (alias_ret);
+		while (av[i][j])
+		{
+			if (av[i][j] == '\'')
+				av[i][j] = ' ';
+			j++;
+		}
+		i++;
+		j = 0;
 	}
+	builtin = check_builtins(av, alias);
+	if (builtin)
+		return (builtin);
 	return (0);
 }
 /**
@@ -145,7 +146,7 @@ void sig_handler(int signum)
 int main(int argc, char *argv[], char *envp[])
 {
 	char *command, *av[ARG_MAX], new_command[ARG_MAX], *alias[1000];
-	short exit_signal = 0, getl_res, tok_res, i = 0, j = 0;
+	short getl_res, tok_res, i = 0, j = 0, quote_flag = 0;
 
 	alias[0] = NULL, signal(SIGINT, sig_handler);
 	if (argc == 1)
@@ -162,26 +163,34 @@ int main(int argc, char *argv[], char *envp[])
 				continue;
 			while (command[i])
 			{
-				if (command[i] == '\n' && command[i + 1])
+				if (command[i + 1] && (command[i] == '\n' || command[i] == ';'))
 				{
 					new_command[j++] = ' ', new_command[j++] = '\n';
 					new_command[j++] = ' ', i++;
+					continue;
+				}
+				else if (command[i] == '\'')
+				{
+					quote_flag = ~quote_flag;
+					i++;
+					continue;
+				}
+				else if (command[i] == ' ' && quote_flag)
+				{
+					new_command[j++] = '\'';
+					i++;
 					continue;
 				}
 				new_command[j] = command[i], i++, j++;
 			}
 			free(command), new_command[j] = '\0';
 			new_command[_strlen(new_command) - 1] = '\0';
-			tok_res = tokenize(new_command, av, &exit_signal, alias);
-			if (tok_res == 1)
-				break;
-			else if (tok_res == 2)
+			tok_res = tokenize(new_command, av, alias);
+			if (tok_res)
 				continue;
 			exec_command(new_command, av, argv[0], envp);
 		}
 	}
-	if (exit_signal)
-		my_exit(_strtok(NULL, " "), alias);
 	free(command);
 	return (0);
 }

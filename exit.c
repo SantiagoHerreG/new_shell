@@ -6,20 +6,24 @@
  * Return: void
  */
 
-void my_exit(char *exit_status, char *alias[])
+void my_exit(char *av[], char *alias[])
 {
-	int i;
+	int i = 0, j = 0;
 
 	while (alias[i])
 		free(alias[i++]);
 
-	if (exit_status)
+	if (av[1])
 	{
-		i = _atoi(exit_status);
+		i = _atoi(av[1]);
+		while (av[j])
+			free(av[j++]);
 		exit(i);
 	}
 	else
 	{
+		while (av[j])
+			free(av[j++]);
 		exit(0);
 	}
 }

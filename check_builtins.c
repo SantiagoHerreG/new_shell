@@ -5,33 +5,41 @@
 * @exit_signal: Flag for exit builtin.
 * Return: 0 if no builtin, 1 or 2 otherwise.
 */
-short check_builtins(char *av[], short *exit_signal)
+short check_builtins(char *av[], char *alias[])
 {
-	char *token;
+	short i = 0;
+	int alias_ret;
 
 	if (!_strcmp("exit", av[0]))
-	{
-		*exit_signal = 1;
-		free(av[0]);
-		return (1);
-	}
+		my_exit(av, alias);
 	if (!_strcmp("cd", av[0]))
 	{
-		_change_dir(_strtok(NULL, " "));
-		free(av[0]);
-		return (2);
+		_change_dir(av[1]);
+		while (av[i])
+			free(av[i++]);
+		return (1);
 	}
 	if (!_strcmp("setenv", av[0]))
 	{
-		token = _strtok(NULL, " ");
-		set_var(token, _strtok(NULL, " "));
-		free(av[0]);
-		return (2);
+		set_var(av[1], av[2]);
+		while (av[i])
+			free(av[i++]);
+		return (1);
 	}
 	if (!_strcmp("unsetenv", av[0]))
 	{
-		unset_var(_strtok(NULL, " "));
-		return (2);
+		unset_var(av[1]);
+		while (av[i])
+			free(av[i++]);
+		return (1);
+	}
+	if (!_strcmp("alias", av[0]))
+	{
+		alias_ret = print_alias(av, alias);
+		i = 0;
+		while (av[i])
+			free(av[i++]);
+		return (alias_ret);
 	}
 	return (0);
 }
