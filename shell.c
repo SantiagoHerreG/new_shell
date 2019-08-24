@@ -73,6 +73,7 @@ short tokenize(char *command, char *av[], char *alias[])
 		i++;
 		j = 0;
 	}
+	expand_vars(av);
 	builtin = check_builtins(av, alias);
 	if (builtin)
 		return (builtin);
