@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <linux/limits.h>
 #include <limits.h>
+char *new_envs[100];
 /**
 * get_input - Prints prompt and gets input from user.
 * @prog_name: Name of the program executed.
@@ -99,7 +100,7 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 		do {
 			full_comm = malloc(_strlen(token[i]) + _strlen(av[0]) + 2);
 			if (!full_comm)
-				exit(-1);
+				/*free av's*/exit(-1);
 			_strcpy(full_comm, token[i]);
 			_strcat(full_comm, "/");
 			execve(_strcat(full_comm, av[0]), av, envp);
@@ -192,5 +193,7 @@ int main(int argc, char *argv[], char *envp[])
 		}
 	}
 	free(command);
+	for (i = 0; new_envs[i]; i++)
+		free(new_envs[i]);
 	return (0);
 }
