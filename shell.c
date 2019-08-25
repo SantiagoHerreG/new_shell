@@ -9,6 +9,7 @@
 #include <linux/limits.h>
 #include <limits.h>
 char *new_envs[100];
+int status;
 /**
 * get_input - Prints prompt and gets input from user.
 * @prog_name: Name of the program executed.
@@ -73,6 +74,7 @@ short tokenize(char *command, char *av[], char *alias[])
 		i++;
 		j = 0;
 	}
+	expand_vars(av);
 	builtin = check_builtins(av, alias);
 	if (builtin)
 		return (builtin);
@@ -90,7 +92,6 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 	pid_t child;
 	short i = 0, idx = -1, checks = -1;
 	char *token[100], *full_comm = NULL, *path_str = NULL;
-	int status;
 
 	checks = check_newlines(av, &idx);
 	path_str = getenvtok(envp, "PATH", token);
