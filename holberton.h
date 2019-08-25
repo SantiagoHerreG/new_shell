@@ -27,5 +27,5 @@ int check_new_alias(char *new_alias);
 void alias_expansion(char *av[], char *alias[]);
 void expand_vars(char *av[]);
 char *_num2str(int num);
-
+void copy_array(char *av[], char *alias_exp[]);
 #endif /* HOLBERTON_H */

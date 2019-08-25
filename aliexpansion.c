@@ -10,7 +10,7 @@
 void alias_expansion(char *av[], char *alias[])
 {
 	int i = 0, j = 0, eq_len, len;
-	char checker[1000], *token, new_args[1000], alias_exp[100][1000];
+	char checker[1000], *token, new_args[1000], *alias_exp[100];
 
 	if (!alias || !alias[0])
 		return;
@@ -30,23 +30,40 @@ void alias_expansion(char *av[], char *alias[])
 	token = _strtok(new_args, " ");
 	for (i = 0; token; i++)
 	{
+		eq_len = _strlen(token);
 		if (token[0] == '\'' && token[1] != '\'')
-			_strcpy(alias_exp[i], token + 1);
+			alias_exp[i] = malloc(eq_len), _strcpy(alias_exp[i], token + 1);
+		else if (token[0] == '\'' && token[1] == '\'')
+			alias_exp[i] = malloc(1), _strcpy(alias_exp[i], "");
 		else
-			_strcpy(alias_exp[i], token);
+			alias_exp[i] = malloc(eq_len + 1), _strcpy(alias_exp[i], token);
 		token = _strtok(NULL, " ");
 	}
-	i -= 1;
-		len = _strlen(alias_exp[i]);
-		alias_exp[i++][len - 1] = '\0';
-	free(av[0]);
+	if (_strcmp(alias_exp[i - 1], ""))
+		len = _strlen(alias_exp[i - 1]), alias_exp[i - 1][len - 1] = '\0';
 	for (j = 1; av[j]; j++)
-		_strcpy(alias_exp[i++], av[j]), free(av[j]);
-
-	for (j = 0; j < i; j++)
 	{
-		av[j] = malloc(_strlen(alias_exp[j] + 1));
-		_strcpy(av[j], alias_exp[j]);
+		alias_exp[i] = malloc(_strlen(av[j] + 1)), _strcpy(alias_exp[i++], av[j]);
+		free(av[j]);
 	}
-	av[j] = NULL;
+	free(av[0]), alias_exp[i] = NULL;
+	copy_array(av, alias_exp);
+}
+
+/**
+ * copy_array - function that initializes/copies a *arr[] and frees the origin
+ * @av: destination
+ * @alias_exp: array to be copied
+ * Return: void
+ */
+void copy_array(char *av[], char *alias_exp[])
+{
+	int i;
+
+	for (i = 0; alias_exp[i]; i++)
+	{
+		av[i] = malloc(_strlen(alias_exp[i]) + 1);
+		_strcpy(av[i], alias_exp[i]), free(alias_exp[i]);
+	}
+	av[i] = NULL;
 }
