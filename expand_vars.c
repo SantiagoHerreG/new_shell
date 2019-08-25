@@ -15,6 +15,7 @@ void expand_vars(char *av[])
 			if (av[i][j] == ' ')
 			{
 				space_flag = 1;
+				not_expanded[0] = '\0';
 				break;
 			}
 			if (av[i][j] != '$')
