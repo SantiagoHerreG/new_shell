@@ -25,5 +25,6 @@ int print_alias(char *av[], char *alias[]);
 short set_alias(char *new_alias, char *alias[]);
 int check_new_alias(char *new_alias);
 void expand_vars(char *av[]);
+char *_num2str(int num);
 
 #endif /* HOLBERTON_H */
