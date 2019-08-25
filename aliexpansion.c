@@ -39,7 +39,7 @@ void alias_expansion(char *av[], char *alias[])
 	i -= 1;
 		len = _strlen(alias_exp[i]);
 		alias_exp[i++][len - 1] = '\0';
-
+	free(av[0]);
 	for (j = 1; av[j]; j++)
 		_strcpy(alias_exp[i++], av[j]), free(av[j]);
 
