@@ -73,11 +73,14 @@ short tokenize(char *command, char *av[], char *alias[])
 		i++;
 		j = 0;
 	}
+
+	alias_expansion(av, alias);
 	builtin = check_builtins(av, alias);
 	if (builtin)
 		return (builtin);
 	return (0);
 }
+
 /**
 * exec_command - Executes the command.
 * @command: Command given by the user.
