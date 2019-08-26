@@ -2,7 +2,8 @@
 #include <stdlib.h>
 /**
  * my_exit - function that exits the program with specified state
- * @exit_status: pointer to the argument of exit
+ * @av: pointer to the array of arguments
+ * @alias: array of aliases
  * Return: void
  */
 

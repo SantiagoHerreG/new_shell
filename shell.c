@@ -219,6 +219,7 @@ int main(int argc, char *argv[], char *envp[])
 			continue;
 		exec_command(new_command, av, argv[0], envp);
 	}
+	free(filename);
 	free(command);
 	free(filename);
 	for (i = 0; new_envs[i]; i++)

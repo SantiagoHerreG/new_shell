@@ -35,11 +35,17 @@ short create_write_file(const char *filename, char *content_to_wr)
 	close(fd);
 	return (1);
 }
-
+/**
+ * get_filename - function that gets the full path-name of the history file
+ * @filename: address to the pointer to the filename
+ * @envp: array of environment variables
+ * Return: returns 1 on success
+ */
 short get_filename(char **filename, char *envp[])
 {
 	char *token;
 	short i = 0;
+
 	while (_strncmp(envp[i], "HOME=", 5))
 		i++;
 	if (!envp[i])
@@ -57,59 +63,69 @@ short get_filename(char **filename, char *envp[])
 	_strcat(*filename, "simple_shell_history");
 	return (1);
 }
+/**
+ * print_history - function that displays the history record
+ * @filename: pointer to the name of the file with history record
+ * Return: void
+ */
 void print_history(char *filename)
 {
-	int fd_h = 0, read_char = 1, close_res, i = 0, line_count = 0, flag = 0, j;
+	int fd_h = 0, read_char = 1, close_res, i = 0, line_count = -1, flag = 0, j;
 	char buffer[1000000];
 
 	if (!filename)
 		return;
-
 	fd_h = open(filename, O_RDONLY);
-
 	if (fd_h < 0)
-		exit (-1);
+		exit(-1);
 
 	while (read_char > 0)
 	{
 		read_char = read(fd_h, buffer, 999999);
 		if (read_char < 0)
-			exit (-1);
+			exit(-1);
 		buffer[read_char] = '\0';
 		if (read_char)
 		{
-			j = 0;
-			while (buffer[j])
-			{
+			for (j = 0; buffer[j]; j++)
 				if (buffer[j] == '\n')
 					line_count += 1;
-				j++;
-			}
 			line_count %= 4096;
-			while (buffer[i])
-			{
-				if (buffer[i] == '\n' && buffer[i + 1])
-				{
-					write(STDIN_FILENO, buffer + i, 1), i++;
-					write(STDIN_FILENO, " ", 1);
-					print_number(line_count), line_count++;
-					write(STDIN_FILENO, "  ", 2);
-				}
-				else if (i == 0 && buffer[i + 1] && !flag)
-				{			
-					write(STDIN_FILENO, " ", 1);
-					print_number(line_count), line_count++;
-					write(STDIN_FILENO, "  ", 2);
-					i++;
-				}
-				else
-					write(STDIN_FILENO, buffer + i, 1), i++;
-			}
+			print_loop_his(buffer, &i, &line_count, &flag);
 			flag++;
 		}
 	}
 	close_res = close(fd_h);
-
 	if (close_res != 0)
-		exit (-1);
+		exit(-1);
+}
+/**
+ * print_loop_his - loop for printing the history record
+ * @buffer: string with read data
+ * @i: integer for index
+ * @line_count: line count
+ * @flag: flag for loop in reading
+ * Return: void
+ */
+void print_loop_his(char *buffer, int *i, int *line_count, int *flag)
+{
+	while (buffer[*i])
+	{
+		if (buffer[*i] == '\n' && buffer[*i + 1])
+		{
+			write(STDIN_FILENO, buffer + *i, 1), (*i)++;
+			write(STDIN_FILENO, " ", 1);
+			print_number(*line_count), (*line_count)++;
+			write(STDIN_FILENO, "  ", 2);
+		}
+		else if (*i == 0 && buffer[*i + 1] && !*flag)
+		{
+			write(STDIN_FILENO, " ", 1);
+			print_number(*line_count), (*line_count)++;
+			write(STDIN_FILENO, "  ", 2);
+			write(STDIN_FILENO, buffer + *i, 1), (*i)++;
+		}
+		else
+			write(STDIN_FILENO, buffer + *i, 1), (*i)++;
+	}
 }
