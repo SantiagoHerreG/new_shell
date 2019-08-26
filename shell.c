@@ -25,7 +25,8 @@ short get_input(char *av[], char **command, int *args)
 
 	if (*args == 1)
 	{
-		write_err = write(STDOUT_FILENO, "Command> ", 9);
+		if (isatty(STDIN_FILENO))
+			write_err = write(STDOUT_FILENO, "Command> ", 9);
 		if (write_err == -1)
 		{
 			perror(av[0]);
@@ -39,6 +40,7 @@ short get_input(char *av[], char **command, int *args)
 	{
 		File_Des = open(av[1], O_RDONLY);
 		getl_res = _getline(command, &size, File_Des);
+		close(File_Des);
 		*args = 0;
 	}
 	return (getl_res);
