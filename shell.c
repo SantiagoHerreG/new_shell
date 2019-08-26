@@ -165,7 +165,8 @@ int main(int argc, char *argv[], char *envp[])
 				break;
 			if (!_strcmp(command, "\n"))
 				continue;
-			file_res = get_filename(&filename, envp);
+			if (!file_res)
+				file_res = get_filename(&filename, envp);
 			if (file_res)
 			{
 			history_res = create_write_file(filename, command);

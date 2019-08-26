@@ -13,11 +13,16 @@ short check_builtins(char *av[], char *alias[], char *filename)
 
 	if (!_strcmp("history", av[0]))
 	{
+		while (av[i])
+			free(av[i++]);
 		print_history(filename);
 		return (1);
 	}
 	if (!_strcmp("exit", av[0]))
+	{
+		free(filename);
 		my_exit(av, alias);
+	}
 	if (!_strcmp("cd", av[0]))
 	{
 		_change_dir(av[1]);
