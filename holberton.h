@@ -20,7 +20,7 @@ char *getenvtok(char *envp[], char *var, char *token[]);
 void set_var(char *arg1, char *arg2);
 void unset_var(char *var_to_rm);
 char *_strtok(char *base, char *delims);
-short check_builtins(char *av[], char *alias[]);
+short check_builtins(char *av[], char *alias[], char *filename);
 int print_alias(char *av[], char *alias[]);
 short set_alias(char *new_alias, char *alias[]);
 int check_new_alias(char *new_alias);
@@ -28,4 +28,9 @@ void alias_expansion(char *av[], char *alias[]);
 void expand_vars(char *av[]);
 char *_num2str(int num);
 void copy_array(char *av[], char *alias_exp[]);
+short get_filename(char **filename, char *envp[]);
+short create_write_file(const char *filename, char *content_to_wr);
+void print_history(char *filename);
+void print_number(int n);
+
 #endif /* HOLBERTON_H */

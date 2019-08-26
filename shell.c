@@ -51,9 +51,10 @@ short get_input(char *av[], char **command, int *args)
 * @av: Vector of pointers to store the tokens.
 * @exit_signal: Flag for the exit builtin.
 * @alias: array of pointers to malloc'ed memory space for aliases.
+* @filename: file with history
 * Return: 1 in case of exit signal, 0 otherwise.
 */
-short tokenize(char *command, char *av[], char *alias[])
+short tokenize(char *command, char *av[], char *alias[], char *filename)
 {
 	char *token;
 	short i = 0, builtin = 0, j = 0;
@@ -90,7 +91,7 @@ short tokenize(char *command, char *av[], char *alias[])
 	}
 	expand_vars(av);
 	alias_expansion(av, alias);
-	builtin = check_builtins(av, alias);
+	builtin = check_builtins(av, alias, filename);
 	if (builtin)
 		return (builtin);
 	return (0);
@@ -162,8 +163,8 @@ void sig_handler(int signum)
 */
 int main(int argc, char *argv[], char *envp[])
 {
-	char *command, *av[ARG_MAX], new_command[ARG_MAX], *alias[1000];
-	short getl_res, tok_res, i = 0, j = 0, quote_flag = 0;
+	char *command, *av[ARG_MAX], new_command[ARG_MAX], *alias[1000], *filename;
+	short getl_res, tok_res, i = 0, j = 0, quote_flag = 0, history_res = 1, file_res = 0;
 
 	alias[0] = NULL, signal(SIGINT, sig_handler);
 	while (1)
@@ -178,6 +179,14 @@ int main(int argc, char *argv[], char *envp[])
 			break;
 		if (!_strcmp(command, "\n"))
 			continue;
+    if (!file_res)
+				file_res = get_filename(&filename, envp);
+		if (file_res)
+		{
+			history_res = create_write_file(filename, command);
+			if (history_res != 1)
+				free (command), exit(-1);
+		}
 		while (command[i])
 		{
 			if (command[i + 1] && (command[i] == '\n' || command[i] == ';'))
@@ -185,8 +194,8 @@ int main(int argc, char *argv[], char *envp[])
 				new_command[j++] = ' ', new_command[j++] = '\n';
 				new_command[j++] = ' ', i++;
 				continue;
-			}
-			else if (command[i] == '\'' || command[i] == '"')
+      }
+      else if (command[i] == '\'' || command[i] == '"')
 			{
 				quote_flag = ~quote_flag;
 				i++;
