@@ -211,11 +211,12 @@ int main(int argc, char *argv[], char *envp[])
 		}
 		free(command), new_command[j] = '\0';
 		new_command[_strlen(new_command) - 1] = '\0';
-		tok_res = tokenize(new_command, av, alias);
+		tok_res = tokenize(new_command, av, alias, filename);
 		if (tok_res)
 			continue;
 		exec_command(new_command, av, argv[0], envp);
 	}
+	free(filename);
 	free(command);
 	for (i = 0; new_envs[i]; i++)
 		free(new_envs[i]);
