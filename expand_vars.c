@@ -27,7 +27,7 @@ void expand_vars(char *av[])
 			{
 				if (av[i][j + 1] == '?')
 				{
-					num2str_res = _num2str(status);
+					num2str_res = _num2str(status >> 8);
 					_strcat(not_expanded, num2str_res);
 					m += _strlen(num2str_res);
 					free(num2str_res);
@@ -100,11 +100,17 @@ void expand_vars(char *av[])
 char *_num2str(int num)
 {
 	char *str = malloc(20);
-	short i = 0;
+	short i = 0, j;
 	
 	for (i = 0; num / 10; i++, num /= 10)
 		str[i] = num % 10 + '0';
 	str[i++] = num % 10 + '0';
 	str[i] = '\0';
+	for (i = 0, j = _strlen(str) - 1; i < j; i++, j--)
+	{
+		str[i] += str[j];
+		str[j] = str[i] - str[j];
+		str[i] -= str[j];
+	}
 	return (str);
 }
