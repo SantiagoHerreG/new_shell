@@ -68,6 +68,7 @@ void expand_vars(char *av[])
 						not_expanded[0] = '\0';
 						_strcat(av[i], environ[k] + l);
 						replaced = 1;
+						l = 0;
 						break;
 					}
 				}
