@@ -176,10 +176,7 @@ int main(int argc, char *argv[], char *envp[])
 			break;
 		getl_res = get_input(argv, &command, &argc);
 		if (getl_res == EOF)
-		{
-			write(STDOUT_FILENO, "\n", 1);
 			break;
-		}
 		if (!_strcmp(command, "\n"))
 			continue;
     if (!file_res)
