@@ -8,6 +8,8 @@
 #include <unistd.h>
 #include <linux/limits.h>
 #include <limits.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 char *new_envs[100];
 int status;
 /**
@@ -16,19 +18,29 @@ int status;
 * @command: String where input will be saved.
 * Return: Result of the getline funcion.
 */
-short get_input(char *prog_name, char **command)
+short get_input(char *av[], char **command, int *args)
 {
 	short getl_res, write_err;
-	int size = ARG_MAX;
+	int size = ARG_MAX, File_Des;
 
-	write_err = write(STDOUT_FILENO, "Command> ", 9);
-	if (write_err == -1)
+	if (*args == 1)
 	{
-		perror(prog_name);
-		free(command);
-		exit(-1);
+		write_err = write(STDOUT_FILENO, "Command> ", 9);
+		if (write_err == -1)
+		{
+			perror(av[0]);
+			free(command);
+			exit(-1);
+		}
+
+		getl_res = _getline(command, &size, STDIN_FILENO);
 	}
-	getl_res = _getline(command, &size, STDIN_FILENO);
+	else
+	{
+		File_Des = open(av[1], O_RDONLY);
+		getl_res = _getline(command, &size, File_Des);
+		*args = 0;
+	}
 	return (getl_res);
 }
 /**
@@ -152,47 +164,46 @@ int main(int argc, char *argv[], char *envp[])
 	short getl_res, tok_res, i = 0, j = 0, quote_flag = 0;
 
 	alias[0] = NULL, signal(SIGINT, sig_handler);
-	if (argc == 1)
+	while (1)
 	{
-		while (1)
+		i = 0, j = 0, command = malloc(ARG_MAX);
+		if (!command)
+			return (-1);
+		if (argc == 0)
+			break;
+		getl_res = get_input(argv, &command, &argc);
+		if (getl_res == EOF)
+			break;
+		if (!_strcmp(command, "\n"))
+			continue;
+		while (command[i])
 		{
-			i = 0, j = 0, command = malloc(ARG_MAX);
-			if (!command)
-				return (-1);
-			getl_res = get_input(argv[0], &command);
-			if (getl_res == EOF)
-				break;
-			if (!_strcmp(command, "\n"))
-				continue;
-			while (command[i])
+			if (command[i + 1] && (command[i] == '\n' || command[i] == ';'))
 			{
-				if (command[i + 1] && (command[i] == '\n' || command[i] == ';'))
-				{
-					new_command[j++] = ' ', new_command[j++] = '\n';
-					new_command[j++] = ' ', i++;
-					continue;
-				}
-				else if (command[i] == '\'')
-				{
-					quote_flag = ~quote_flag;
-					i++;
-					continue;
-				}
-				else if (command[i] == ' ' && quote_flag)
-				{
-					new_command[j++] = '\'';
-					i++;
-					continue;
-				}
-				new_command[j] = command[i], i++, j++;
-			}
-			free(command), new_command[j] = '\0';
-			new_command[_strlen(new_command) - 1] = '\0';
-			tok_res = tokenize(new_command, av, alias);
-			if (tok_res)
+				new_command[j++] = ' ', new_command[j++] = '\n';
+				new_command[j++] = ' ', i++;
 				continue;
-			exec_command(new_command, av, argv[0], envp);
+			}
+			else if (command[i] == '\'' || command[i] == '"')
+			{
+				quote_flag = ~quote_flag;
+				i++;
+				continue;
+			}
+			else if (command[i] == ' ' && quote_flag)
+			{
+				new_command[j++] = '\'';
+				i++;
+				continue;
+			}
+			new_command[j] = command[i], i++, j++;
 		}
+		free(command), new_command[j] = '\0';
+		new_command[_strlen(new_command) - 1] = '\0';
+		tok_res = tokenize(new_command, av, alias);
+		if (tok_res)
+			continue;
+		exec_command(new_command, av, argv[0], envp);
 	}
 	free(command);
 	for (i = 0; new_envs[i]; i++)
