@@ -3,13 +3,19 @@
 * check_builtins - Checks if user entered a builtin.
 * @av: Command in tokens.
 * @exit_signal: Flag for exit builtin.
+* @filename: file with history
 * Return: 0 if no builtin, 1 or 2 otherwise.
 */
-short check_builtins(char *av[], char *alias[])
+short check_builtins(char *av[], char *alias[], char *filename)
 {
 	short i = 0;
 	int alias_ret;
 
+	if (!_strcmp("history", av[0]))
+	{
+		print_history(filename);
+		return (1);
+	}
 	if (!_strcmp("exit", av[0]))
 		my_exit(av, alias);
 	if (!_strcmp("cd", av[0]))

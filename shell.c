@@ -37,9 +37,10 @@ short get_input(char *prog_name, char **command)
 * @av: Vector of pointers to store the tokens.
 * @exit_signal: Flag for the exit builtin.
 * @alias: array of pointers to malloc'ed memory space for aliases.
+* @filename: file with history
 * Return: 1 in case of exit signal, 0 otherwise.
 */
-short tokenize(char *command, char *av[], char *alias[])
+short tokenize(char *command, char *av[], char *alias[], char *filename)
 {
 	char *token;
 	short i = 0, builtin = 0, j = 0;
@@ -76,7 +77,7 @@ short tokenize(char *command, char *av[], char *alias[])
 	}
 	expand_vars(av);
 	alias_expansion(av, alias);
-	builtin = check_builtins(av, alias);
+	builtin = check_builtins(av, alias, filename);
 	if (builtin)
 		return (builtin);
 	return (0);
@@ -167,7 +168,6 @@ int main(int argc, char *argv[], char *envp[])
 			file_res = get_filename(&filename, envp);
 			if (file_res)
 			{
-			printf("filename = %s\n", filename);
 			history_res = create_write_file(filename, command);
 			if (history_res != 1)
 				free (command), exit(-1);
@@ -196,7 +196,7 @@ int main(int argc, char *argv[], char *envp[])
 			}
 			free(command), new_command[j] = '\0';
 			new_command[_strlen(new_command) - 1] = '\0';
-			tok_res = tokenize(new_command, av, alias);
+			tok_res = tokenize(new_command, av, alias, filename);
 			if (tok_res)
 				continue;
 			exec_command(new_command, av, argv[0], envp);
