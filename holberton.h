@@ -28,4 +28,7 @@ void alias_expansion(char *av[], char *alias[]);
 void expand_vars(char *av[]);
 char *_num2str(int num);
 void copy_array(char *av[], char *alias_exp[]);
+short get_filename(char **filename, char *envp[]);
+short create_write_file(const char *filename, char *content_to_wr);
+
 #endif /* HOLBERTON_H */

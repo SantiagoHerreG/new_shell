@@ -148,8 +148,8 @@ void sig_handler(int signum)
 */
 int main(int argc, char *argv[], char *envp[])
 {
-	char *command, *av[ARG_MAX], new_command[ARG_MAX], *alias[1000];
-	short getl_res, tok_res, i = 0, j = 0, quote_flag = 0;
+	char *command, *av[ARG_MAX], new_command[ARG_MAX], *alias[1000], *filename;
+	short getl_res, tok_res, i = 0, j = 0, quote_flag = 0, history_res = 1, file_res = 0;
 
 	alias[0] = NULL, signal(SIGINT, sig_handler);
 	if (argc == 1)
@@ -164,6 +164,14 @@ int main(int argc, char *argv[], char *envp[])
 				break;
 			if (!_strcmp(command, "\n"))
 				continue;
+			file_res = get_filename(&filename, envp);
+			if (file_res)
+			{
+			printf("filename = %s\n", filename);
+			history_res = create_write_file(filename, command);
+			if (history_res != 1)
+				free (command), exit(-1);
+			}
 			while (command[i])
 			{
 				if (command[i + 1] && (command[i] == '\n' || command[i] == ';'))
