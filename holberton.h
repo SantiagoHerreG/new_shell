@@ -3,7 +3,7 @@
 #define _POSIX_C_SOURCE 200809L
 #include <stdlib.h>
 #include <signal.h>
-
+char *new_envs[100];
 extern char **environ;
 char *_strcpy(char *, char *);
 int _strlen(char *);
@@ -33,4 +33,5 @@ short create_write_file(const char *filename, char *content_to_wr);
 void print_history(char *filename);
 void print_number(int n);
 void print_loop_his(char *, int *, int *, int *);
-#endif /* HOLBERTON_H */
+
+#endif  /* HOLBERTON_H */

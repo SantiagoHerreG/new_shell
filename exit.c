@@ -1,5 +1,6 @@
 #include "holberton.h"
 #include <stdlib.h>
+
 /**
  * my_exit - function that exits the program with specified state
  * @av: pointer to the array of arguments
@@ -13,6 +14,9 @@ void my_exit(char *av[], char *alias[])
 
 	while (alias[i])
 		free(alias[i++]);
+	i = 0;
+	while (new_envs[i])
+		free(new_envs[i++]);
 
 	if (av[1])
 	{

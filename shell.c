@@ -10,7 +10,6 @@
 #include <limits.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-char *new_envs[100];
 int status;
 /**
 * get_input - Prints prompt and gets input from user.
@@ -182,7 +181,7 @@ int main(int argc, char *argv[], char *envp[])
 		}
 		if (!_strcmp(command, "\n"))
 			continue;
-    if (!file_res)
+		if (!file_res)
 				file_res = get_filename(&filename, envp);
 		if (file_res)
 		{
@@ -197,8 +196,8 @@ int main(int argc, char *argv[], char *envp[])
 				new_command[j++] = ' ', new_command[j++] = '\n';
 				new_command[j++] = ' ', i++;
 				continue;
-      }
-      else if (command[i] == '\'' || command[i] == '"')
+			}
+			else if (command[i] == '\'' || command[i] == '"')
 			{
 				quote_flag = ~quote_flag;
 				i++;
@@ -219,7 +218,6 @@ int main(int argc, char *argv[], char *envp[])
 			continue;
 		exec_command(new_command, av, argv[0], envp);
 	}
-	free(filename);
 	free(command);
 	free(filename);
 	for (i = 0; new_envs[i]; i++)

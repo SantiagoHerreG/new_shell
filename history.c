@@ -70,8 +70,10 @@ short get_filename(char **filename, char *envp[])
  */
 void print_history(char *filename)
 {
-	int fd_h = 0, read_char = 1, close_res, i = 0, line_count = -1, flag = 0, j;
+	int fd_h = 0, read_char = 1, close_res, i = 0, flag = 0, j;
 	char buffer[1000000];
+	int flag_hist;
+	int line_count;
 
 	if (!filename)
 		return;
@@ -88,9 +90,11 @@ void print_history(char *filename)
 		if (read_char)
 		{
 			for (j = 0; buffer[j]; j++)
-				if (buffer[j] == '\n')
+				if (buffer[j] == '\n' && !flag_hist)
 					line_count += 1;
-			line_count %= 4096;
+			if (!flag_hist)
+				line_count %= 4096;
+			flag_hist = line_count;
 			print_loop_his(buffer, &i, &line_count, &flag);
 			flag++;
 		}
@@ -103,12 +107,15 @@ void print_history(char *filename)
  * print_loop_his - loop for printing the history record
  * @buffer: string with read data
  * @i: integer for index
- * @line_count: line count
+ * @line_count: count of lines
  * @flag: flag for loop in reading
  * Return: void
  */
 void print_loop_his(char *buffer, int *i, int *line_count, int *flag)
 {
+	int temp;
+
+	temp = *line_count;
 	while (buffer[*i])
 	{
 		if (buffer[*i] == '\n' && buffer[*i + 1])
@@ -128,4 +135,5 @@ void print_loop_his(char *buffer, int *i, int *line_count, int *flag)
 		else
 			write(STDIN_FILENO, buffer + *i, 1), (*i)++;
 	}
+	*line_count = temp;
 }
