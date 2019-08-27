@@ -32,5 +32,7 @@ short get_filename(char **filename, char *envp[]);
 short create_write_file(const char *filename, char *content_to_wr);
 void print_history(char *filename);
 void print_number(int n);
-void print_loop_his(char *, int *, int *, int *);
-#endif /* HOLBERTON_H */
+void print_loop_his(char *, int *, int *);
+extern int flag_hist;
+extern int line_count;
+#endif  /* HOLBERTON_H */
