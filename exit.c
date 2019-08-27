@@ -1,6 +1,5 @@
 #include "holberton.h"
 #include <stdlib.h>
-char *new_envs[100];
 
 /**
  * my_exit - function that exits the program with specified state

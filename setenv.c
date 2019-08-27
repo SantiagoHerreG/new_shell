@@ -11,7 +11,6 @@ void set_var(char *arg1, char *arg2)
 {
 	char *new_var, var_to_set[ARG_MAX];
 	short i = 0, j = 0;
-	extern char *new_envs[];
 
 	if (!arg1 || !arg2)
 	{

@@ -10,7 +10,6 @@
 #include <limits.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-char *new_envs[100];
 int status;
 /**
 * get_input - Prints prompt and gets input from user.
