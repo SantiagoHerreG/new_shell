@@ -1,0 +1,119 @@
+.TH hsh 1  2019-08-29 "version 1.0" "hsh Shell Manual Page"
+.SH NAME
+hsh - command interpreter (shell)
+.SH SYNOPSIS
+.BI "hsh [filename]"
+.br
+.PP
+Program built
+as a implementation
+based on
+.IR "sh (dash)"
+.SH DESCRIPTION
+.BR hsh
+is a command language interpreter that executes commands read from the
+.IR "standard input "
+or from a 
+.IR "file"
+.PP
+It incorporates many features to aid interactive use and has the advantage that the interpretative language is common to both interactive and non-interactive use (shell scripts). That is, commands can be typed directly to the running shell or can be put into a file and the file can be executed directly by the shell.
+.SS Invocation
+In case of no filename present, the program is executed in 
+.I "interactive-mode"
+and the prompt
+.BI ""$ ""
+is printed.
+The program waits for user input in stdin and receives each command separated by newline character or EOF condition.
+.PP
+If filename is present, the program is executed in 
+.I "non-interactive-mode"
+and exits.
+.SS Lexical Structure
+The shell reads input in terms of lines from a file or from standard input and breaks it up into words at whitespace (blanks), and at certain sequences of characters that are special to the shell called 'control operators'. Following is a list of operators:
+.TP
+.BR (&&) ", "(;) ", "(||)
+.SS Quoting
+.TP
+.BR "Single quotes"
+.PP
+('  ')
+A string enclosed into single quotes is avoided of been args-separation and control operators are also ignored.
+.TP
+.BR "Double quotes"
+.PP
+("  ")
+A string enclosed into double quotes is avoided of been args-separated and control operators are also ignored.
+.SS Comments
+The commands passed to the program after the character "#" are ignored and considered as comments.
+.SS Aliases
+An alias is a name and corresponding value set using the alias builtin command. Whenever a reserved word may occur, and after checking for reserved words, the shell checks the word to see if it matches an alias. If it does, it replaces it in the input stream with its value.
+.SS Variables expansion
+When the character "$" is before an argument, the argument is replaced with the variable value if it exists.
+.PP 
+$?: Variable that stores the exit status of previous execution.
+.PP 
+$$: Variable that stores the process ID of the current instance of the shell.
+.SS Commands
+If a command has been recognized, the program executes the following steps:
+.PP
+	1.	The shell checks for control operators, arguments separation and variables expansions.
+.PP
+	2.	First command is expanded as a variable or alias if possible.
+.PP
+	3.	The first argument is checked for built-in matching.
+.PP
+	4.	The command is executed with all its arguments, looking for the path in global variable PATH if it is a shell function or in built-ins else.
+.SS Builtins
+This section lists the builtin commands which are builtin because they need to perform some operation that can't be performed by a separate process.
+.TP
+alias [name[=value ...]]
+Reserves a word for a special meaning (alias value), so the next time the word is used as the first argument it is expanded to the alias value.
+Several aliases can be created by adding the corresponding declarations after alias command.
+If no arguments are passed to alias, the list of already existing aliases is displayed.
+.PP
+.TP
+cd [directory path]
+Changes current working directory to a specified directory. If there is no argument, the cd built in changes the current directory to the path stored in the local variable HOME. If the argument specified is the character "-" the current directory is changed to the path stored in the local variable OLDPWD, which is the previous directory accessed.
+.PP
+.TP
+env
+Displays the list of local environment variables.
+.PP
+.TP
+exit [status]
+Exits the shell with the return status specified, where status is a numeric string of characters. If no status is specified, the exit status is set to 0.
+.PP
+.TP
+history
+Displays the command history list with line numbers. The history is stored in a file named simple_shell_history located in the path from the local variable HOME.
+.PP
+.TP
+setenv [variable] [value]
+Sets a new local variable in the format variable=value. Prefered variable name in uppercase, such as VARIABLE=value.
+.PP
+.TP
+unsetenv [variable]
+Frees the memory space and deletes the variable from the local environment. 
+.PP
+.SH EXIT STATUS
+Errors that are detected by the shell, such as a syntax error, will cause the shell to exit with a non-zero exit status. If the shell is not an interactive shell, the execution of the shell file will be aborted. Otherwise the shell will return the exit status of the last command executed, or if the exit builtin is used with a numeric argument, it will return the argument.
+.SH FILES
+.TP
+.BR "$HOME/.simple_shell_history"
+.SH SEE ALSO
+.TP
+csh(1), ksh(1)
+
+.SH BUGS
+No bugs known.
+
+.SH AUTHORS
+This page was written by
+.BR "Santiago Herrera "
+and
+.BR "Darwin Soto"
+
+A description of the project,
+and the source code
+can be found at
+\%https://github.com/SantiagoHerreG/new_shell.
