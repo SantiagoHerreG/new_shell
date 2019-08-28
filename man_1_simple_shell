@@ -43,6 +43,8 @@ A string enclosed into single quotes is avoided of been args-separation and cont
 .PP
 ("  ")
 A string enclosed into double quotes is avoided of been args-separated and control operators are also ignored.
+.SS Comments
+The commands passed to the program after the character "#" are ignored and considered as comments.
 .SS Aliases
 An alias is a name and corresponding value set using the alias builtin command. Whenever a reserved word may occur, and after checking for reserved words, the shell checks the word to see if it matches an alias. If it does, it replaces it in the input stream with its value.
 .SS Variables expansion
@@ -63,22 +65,35 @@ If a command has been recognized, the program executes the following steps:
 	4.	The command is executed with all its arguments, looking for the path in global variable PATH if it is a shell function or in built-ins else.
 .SS Builtins
 This section lists the builtin commands which are builtin because they need to perform some operation that can't be performed by a separate process.
+.TP
+alias [name[=value ...]]
+Reserves a word for a special meaning (alias value), so the next time the word is used as the first argument it is expanded to the alias value.
+Several aliases can be created by adding the corresponding declarations after alias command.
+If no arguments are passed to alias, the list of already existing aliases is displayed.
 .PP
-	alias:
+.TP
+cd [directory path]
+Changes current working directory to a specified directory. If there is no argument, the cd built in changes the current directory to the path stored in the local variable HOME. If the argument specified is the character "-" the current directory is changed to the path stored in the local variable OLDPWD, which is the previous directory accessed.
 .PP
-		Reserves a word for a special meaning (alias value), so the next time the word is used as the first argument it is expanded to the alias value.
+.TP
+env
+Displays the list of local environment variables.
 .PP
-	cd:
+.TP
+exit [status]
+Exits the shell with the return status specified, where status is a numeric string of characters. If no status is specified, the exit status is set to 0.
 .PP
-	env:
+.TP
+history
+Displays the command history list with line numbers. The history is stored in a file named simple_shell_history located in the path from the local variable HOME.
 .PP
-	exit:
+.TP
+setenv [variable] [value]
+Sets a new local variable in the format variable=value. Prefered variable name in uppercase, such as VARIABLE=value.
 .PP
-	history:
-.PP
-	setenv:
-.PP
-	unsetenv:
+.TP
+unsetenv [variable]
+Frees the memory space and deletes the variable from the local environment. 
 .PP
 .SH EXIT STATUS
 Errors that are detected by the shell, such as a syntax error, will cause the shell to exit with a non-zero exit status. If the shell is not an interactive shell, the execution of the shell file will be aborted. Otherwise the shell will return the exit status of the last command executed, or if the exit builtin is used with a numeric argument, it will return the argument.
