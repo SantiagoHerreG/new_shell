@@ -41,13 +41,14 @@ void alias_expansion(char *av[], char *alias[])
 	}
 	if (_strcmp(alias_exp[i - 1], ""))
 		len = _strlen(alias_exp[i - 1]), alias_exp[i - 1][len - 1] = '\0';
-	for (j = 1; av[j]; j++)
+
+	for (j = 1; av[j]; j++, i++)
 	{
-		alias_exp[i] = malloc(_strlen(av[j] + 1)), _strcpy(alias_exp[i++], av[j]);
+		alias_exp[i] = malloc(_strlen(av[j]) + 1);
+		 _strcpy(alias_exp[i], av[j]);
 		free(av[j]);
 	}
-	free(av[0]), alias_exp[i] = NULL;
-	copy_array(av, alias_exp);
+	free(av[0]), alias_exp[i] = NULL, copy_array(av, alias_exp);
 }
 
 /**

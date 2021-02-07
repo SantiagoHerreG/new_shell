@@ -34,6 +34,7 @@ void set_var(char *arg1, char *arg2)
 		while (new_envs[j])
 			j++;
 		new_envs[j] = new_var;
+		new_envs[j + 1] = NULL;
 		environ[i++] = new_var;
 		environ[i] = NULL;
 	}
@@ -47,7 +48,7 @@ void set_var(char *arg1, char *arg2)
 
 void unset_var(char *var_name)
 {
-	short i = 0;
+	short i = 0, j = 0;
 	char var_to_rm[ARG_MAX];
 
 	if (!var_name)
@@ -61,6 +62,9 @@ void unset_var(char *var_name)
 
 	while (environ[i] && _strncmp(environ[i], var_to_rm, _strlen(var_to_rm)))
 		i++;
+	for (j = 0; new_envs[j]; j++)
+		if (!_strcmp(new_envs[j], environ[i]))
+			break;
 	if (!environ[i])
 	{
 		write(STDERR_FILENO, "unsetenv: Variable not found\n", 29);
@@ -73,6 +77,8 @@ void unset_var(char *var_name)
 	while (environ[i])
 	{
 		environ[i] = environ[i + 1];
+		new_envs[j] = new_envs[j + 1];
 		i++;
+		j++;
 	}
 }

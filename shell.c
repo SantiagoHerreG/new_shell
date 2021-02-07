@@ -25,7 +25,7 @@ short get_input(char *av[], char **command, int *args)
 	if (*args == 1)
 	{
 		if (isatty(STDIN_FILENO))
-			write_err = write(STDOUT_FILENO, "Command> ", 9);
+			write_err = write(STDOUT_FILENO, "$ ", 2);
 		if (write_err == -1)
 		{
 			perror(av[0]);
@@ -102,13 +102,13 @@ short tokenize(char *command, char *av[], char *alias[], char *filename)
 * @prog_name: Name of the program.
 * @envp: Environment for the program.
 */
-void exec_command(char *command, char *av[], char *prog_name, char *envp[])
+void exec_command(char *filename, char *av[], char *prog_name, char *envp[])
 {
 	pid_t child;
-	short i = 0, idx = -1, checks = -1;
+	short i = 0;
 	char *token[100], *full_comm = NULL, *path_str = NULL;
 
-	checks = check_newlines(av, &idx);
+	/*checks = check_newlines(av, &idx);*/
 	path_str = getenvtok(envp, "PATH", token);
 	child = fork();
 	if (!child)
@@ -128,6 +128,7 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 		for (i = 0; av[i]; i++)
 			free(av[i]);
 		free(path_str);
+		free(filename);
 		_exit(1);
 	}
 	else
@@ -136,12 +137,12 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 		for (i = 0; av[i]; i++)
 			free(av[i]);
 		free(full_comm), free(path_str);
-		if (idx >= 0 && (!checks || (checks == 1 && !status) ||
+		/*if (idx >= 0 && (!checks || (checks == 1 && !status) ||
 			(checks == 2 && status)))
 			exec_command(command, av + idx, prog_name, envp);
 		else if (idx > 0 && checks == 3)
 			for (i = idx; av[i]; i++)
-				free(av[i]);
+				free(av[i]);*/
 	}
 }
 /**
@@ -151,7 +152,7 @@ void exec_command(char *command, char *av[], char *prog_name, char *envp[])
 void sig_handler(int signum)
 {
 	if (signum == SIGINT)
-		write(STDOUT_FILENO, "\nCommand> ", 10);
+		write(STDOUT_FILENO, "\n$ ", 3);
 }
 /**
 * main - Entry point for shell.
@@ -162,25 +163,26 @@ void sig_handler(int signum)
 */
 int main(int argc, char *argv[], char *envp[])
 {
-	char *command, *av[ARG_MAX], new_command[ARG_MAX], *alias[1000], *filename;
-	short getl_res, tok_res, i = 0, j = 0, quote_flag = 0, history_res = 1, file_res = 0;
+	char *command, *av[ARG_MAX], new_command[ARG_MAX], *alias[1000], *filename, *exec_comm;
+	short getl_res, tok_res, i = 0, j = 0, quote_flag = 0, history_res = 1;
+	short file_res = 0, idx = 0, checks = -1;
 
 	alias[0] = NULL, signal(SIGINT, sig_handler);
 	while (1)
 	{
-		i = 0, j = 0, command = malloc(ARG_MAX);
+		i = 0, j = 0, command = malloc(ARG_MAX);idx = 0; checks = -1;
 		if (!command)
 			return (-1);
 		if (argc == 0)
 			break;
 		getl_res = get_input(argv, &command, &argc);
 		if (getl_res == EOF)
-		{
-			write(STDOUT_FILENO, "\n", 1);
 			break;
-		}
 		if (!_strcmp(command, "\n"))
+		{
+			free(command);
 			continue;
+		}
 		if (!file_res)
 				file_res = get_filename(&filename, envp);
 		if (file_res)
@@ -213,13 +215,25 @@ int main(int argc, char *argv[], char *envp[])
 		}
 		free(command), new_command[j] = '\0';
 		new_command[_strlen(new_command) - 1] = '\0';
-		tok_res = tokenize(new_command, av, alias, filename);
-		if (tok_res)
-			continue;
-		exec_command(new_command, av, argv[0], envp);
+		exec_comm = new_command;
+		do{
+			exec_comm += idx;
+			checks = check_newlines(exec_comm, &idx);
+			tok_res = tokenize(exec_comm, av, alias, filename);
+			if (tok_res)
+			{
+				for (i = 0; av[i]; i++)
+					free(av[i]);
+				continue;
+			}
+			exec_command(filename, av, argv[0], envp);
+		}while(!checks || (checks == 1 && !status) || (checks == 2 && status));
 	}
 	free(command);
-	free(filename);
+	for (i = 0; alias[i]; i++)
+		free(alias[i]);
+	if (file_res)
+		free(filename);
 	for (i = 0; new_envs[i]; i++)
 		free(new_envs[i]);
 	return (0);

@@ -5,22 +5,26 @@
 * @idx: Pointer to variable to save the index if found.
 * Return: 0 if \n or ; 1 if &&, 2 if ||, and 3 if #.
 */
-short check_newlines(char *av[], short *idx)
+short check_newlines(char *av, short *idx)
 {
 	short i = 0, retv = -1;
 
 	while (av[i])
 	{
-		if (*av[i] == '\n' || *av[i] == ';' || !_strcmp(av[i], "&&") ||
-			!_strcmp(av[i], "||") || *av[i] == '#')
+		if (av[i] == '\n' || av[i] == ';' || (av[i] == '&' && av[i + 1] == '&') ||
+			(av[i] == '|' && av[i + 1] == '|') || av[i] == '#')
 		{
-			switch (*av[i])
+			switch (av[i])
 			{
 				case '&':
 					retv = 1;
+					av[i] = '\0';
+					i++;
 					break;
 				case '|':
 					retv = 2;
+					av[i] = '\0';
+					i++;
 					break;
 				case '#':
 					retv = 3;
@@ -29,8 +33,7 @@ short check_newlines(char *av[], short *idx)
 					retv = 0;
 					break;
 			}
-			free(av[i]);
-			av[i] = NULL;
+			av[i] = '\0';
 			*idx = ++i;
 			break;
 		}
